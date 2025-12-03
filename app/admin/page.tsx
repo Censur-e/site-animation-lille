@@ -29,14 +29,23 @@ export default function AdminPage() {
   }, [])
 
   const loadRecruitments = async () => {
-    const supabase = createClient()
-    const { data, error } = await supabase.from("applications").select("*").order("created_at", { ascending: false })
+    try {
+      const supabase = createClient()
+      console.log("[v0] Loading recruitments from Supabase...")
 
-    if (error) {
-      toast.error("Erreur de chargement des candidatures")
-      console.error(error)
-    } else {
+      const { data, error } = await supabase.from("applications").select("*").order("created_at", { ascending: false })
+
+      if (error) {
+        console.error("[v0] Error loading recruitments:", error)
+        toast.error("Erreur de chargement des candidatures")
+        return
+      }
+
+      console.log("[v0] Recruitments loaded:", data?.length || 0)
       setRecruitments(data || [])
+    } catch (error) {
+      console.error("[v0] Fatal error in loadRecruitments:", error)
+      toast.error("Erreur de connexion à la base de données")
     }
   }
 

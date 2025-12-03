@@ -75,19 +75,22 @@ export default function Hero() {
     setIsSubmitting(true)
 
     const formData = new FormData(e.currentTarget)
-    const supabase = createClient()
-
-    const application = {
-      role: roles.find((r) => r.id === expandedId)?.title || expandedId,
-      pseudo_roblox: formData.get("pseudoRoblox") as string,
-      discord_id: formData.get("discord") as string,
-      age: formData.get("age") as string,
-      specific_answer: formData.get("specific") as string,
-      motivation: formData.get("motivation") as string,
-      status: "pending",
-    }
 
     try {
+      const supabase = createClient()
+
+      const application = {
+        role: roles.find((r) => r.id === expandedId)?.title || expandedId,
+        pseudo_roblox: formData.get("pseudoRoblox") as string,
+        discord_id: formData.get("discord") as string,
+        age: formData.get("age") as string,
+        specific_answer: formData.get("specific") as string,
+        motivation: formData.get("motivation") as string,
+        status: "pending",
+      }
+
+      console.log("[v0] Submitting application:", application)
+
       const { error } = await supabase.from("applications").insert([application])
 
       if (error) throw error
@@ -97,9 +100,9 @@ export default function Hero() {
       })
       handleClose()
     } catch (error) {
-      console.error("Error submitting application:", error)
+      console.error("[v0] Error submitting application:", error)
       toast.error("Erreur lors de l'envoi", {
-        description: "Veuillez réessayer plus tard.",
+        description: error instanceof Error ? error.message : "Veuillez réessayer plus tard.",
       })
     } finally {
       setIsSubmitting(false)
